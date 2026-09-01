@@ -8,14 +8,60 @@
 <body>
 
     <!-- Шапка з назвою -->
+     <header>
+        <h1>Трекер витрат</h1>
+     </header>
 
-    <!-- Форма додавання витрати/доходу -->
+    <main>
+         
+        <!-- Форма додавання витрати/доходу -->
+        <section>
+            <h2>Додати операцію</h2>
 
-    <!-- Список операцій -->
+            <form>
+                <label for="operation-type">Тип операції:</label>
+                <select id="operation-type" name="operation-type">
+                    <option value="expense">Витрата</option>
+                    <option value="income">Дохід</option>
+                </select>
+
+                <label for="amount">Сума:</label>
+                <input type="number" id="amount" name="amount">
+
+                <label for="category">Категорія:</label>
+                <input type="text" id="category" name="category">
+
+                <button type="submit">Додати операцію</button>
+            </form>
+        </section>
+
+        <!-- Список операцій -->
+        <section>
+            <h2>Операції</h2>
+
+            <article>
+                <h3>25 € — Продукти</h3>
+            </article>
+
+            <article>
+                <h3>100 € — Дохід</h3>
+            </article>
+        </section>
+        
+    </main>
+
 
     <!-- Блок підсумкового балансу -->
+    <aside> 
+        <h2>Підсумковий баланс</h2> 
+        <p>75 €</p> 
+    </aside>
+    
 
     <!-- Підвал -->
+    <footer> 
+        <p>Автор: Marharyta Starodubtseva</p>
+    </footer> <script src="js/app.js"></script>
 
 </body>
 </html>
