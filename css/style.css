@@ -1,0 +1,171 @@
+/* глобальний reset на початку файлу стилів */
+*, *::before, *::after 
+{
+    box-sizing: border-box;
+}
+
+body 
+{
+    margin: 0;
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #333333;
+    background-color: #c7f2c7;
+}
+
+header
+{
+    background-color: #40a945;
+    padding: 20px;
+    border-bottom: 3px solid #1f5322;
+}
+
+header h1 
+{
+    margin: 0;
+    font-size: 2rem;
+    color: #e4f1e4;
+}
+
+nav a 
+{
+    margin-right: 20px;
+    color: #e4f1e4;
+    text-decoration: none;
+}
+
+nav a:last-child 
+{
+    margin-right: 0;
+}
+
+main 
+{
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+section 
+{
+    margin-bottom: 30px;
+}
+
+.card 
+{
+    padding: 15px;
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background-color: #ffffff;
+}
+
+/* Форма "Додати операцію" */
+.transaction-form 
+{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 15px;
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    background-color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.transaction-form input,
+.transaction-form select 
+{
+    padding: 8px 10px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.transaction-form input:focus,
+.transaction-form select:focus 
+{
+    outline: none;
+    border-color: #40a945;
+}
+
+.transaction-form button 
+{
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #40a945;
+    color: #ffffff;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.transaction-form button:hover 
+{
+    background-color: #1f5322;
+}
+
+/* Записи операцій — рядкові картки */
+.transaction 
+{
+    padding: 10px;
+    border-bottom: 1px solid #dddddd;
+}
+
+.transaction:last-child 
+{
+    border-bottom: none;
+}
+
+.transaction h3 
+{
+    margin: 0;
+    font-size: 1rem;
+    font-weight: normal;
+}
+
+/* Модифікатори суми */
+.amount--income 
+{
+    color: #2e7d32;
+    font-weight: bold;
+}
+
+.amount--expense 
+{
+    color: #c62828;
+    font-weight: bold;
+}
+
+aside 
+{
+    max-width: 900px;
+    margin: 0 auto 30px;
+    padding: 20px;
+    background-color: #e8f5e9;
+    border: 1px solid #a5d6a7;
+    border-radius: 8px;
+}
+
+aside h2 
+{
+    margin-top: 0;
+}
+
+aside p 
+{
+    margin-bottom: 0;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2e7d32;
+}
+
+footer 
+{
+    padding: 20px;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #777777;
+}

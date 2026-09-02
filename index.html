@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
     <title>Трекер витрат</title>
 </head>
 <body>
 
-    <!-- Шапка з назвою -->
-     <header>
+    <header>
         <h1>Трекер витрат</h1>
-     </header>
+    </header>
 
     <main>
-         
+
         <!-- Форма додавання витрати/доходу -->
         <section>
             <h2>Додати операцію</h2>
 
-            <form>
+            <form class="transaction-form">
                 <label for="operation-type">Тип операції:</label>
                 <select id="operation-type" name="operation-type">
                     <option value="expense">Витрата</option>
@@ -39,29 +39,29 @@
         <section>
             <h2>Операції</h2>
 
-            <article>
-                <h3>25 € — Продукти</h3>
+            <article class="transaction">
+                <h3><span class="amount amount--expense">-25 €</span> — Продукти</h3>
             </article>
 
-            <article>
-                <h3>100 € — Дохід</h3>
+            <article class="transaction">
+                <h3><span class="amount amount--income">+100 €</span> — Дохід</h3>
             </article>
         </section>
-        
+
     </main>
 
-
     <!-- Блок підсумкового балансу -->
-    <aside> 
-        <h2>Підсумковий баланс</h2> 
-        <p>75 €</p> 
+    <aside>
+        <h2>Підсумковий баланс</h2>
+        <p>75 €</p>
     </aside>
-    
 
     <!-- Підвал -->
-    <footer> 
+    <footer>
         <p>Автор: Marharyta Starodubtseva</p>
-    </footer> <script src="js/app.js"></script>
+    </footer>
+
+    <script src="js/app.js"></script>
 
 </body>
 </html>
