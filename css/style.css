@@ -4,6 +4,12 @@
     box-sizing: border-box;
 }
 
+img 
+{
+    max-width: 100%;
+    height: auto;
+}
+
 body 
 {
     margin: 0;
@@ -16,6 +22,10 @@ body
 
 header
 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
     background-color: #40a945;
     padding: 20px;
     border-bottom: 3px solid #1f5322;
@@ -61,17 +71,29 @@ section
     background-color: #ffffff;
 }
 
-/* Форма "Додати операцію" */
+/* ===== Форма "Додати операцію" ===== */
+/* Мобільний за замовчуванням: усі поля в стовпчик */
 .transaction-form 
 {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
     padding: 15px;
     border: 1px solid #dddddd;
     border-radius: 8px;
     background-color: #ffffff;
     margin-bottom: 20px;
+}
+
+.form-group 
+{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 15px;
+}
+
+.form-row 
+{
+    display: flex;
+    flex-direction: column;
 }
 
 .transaction-form input,
@@ -82,6 +104,7 @@ section
     border-radius: 4px;
     font-size: 1rem;
     font-family: inherit;
+    width: 100%;
 }
 
 .transaction-form input:focus,
@@ -107,7 +130,7 @@ section
     background-color: #1f5322;
 }
 
-/* Записи операцій — рядкові картки */
+/* ===== Записи операцій — рядки (без карток-сітки) ===== */
 .transaction 
 {
     padding: 10px;
@@ -126,7 +149,6 @@ section
     font-weight: normal;
 }
 
-/* Модифікатори суми */
 .amount--income 
 {
     color: #2e7d32;
@@ -168,4 +190,61 @@ footer
     text-align: center;
     font-size: 0.875rem;
     color: #777777;
+}
+
+/*Планшет (від 600px): поля форми в ряд*/
+@media (min-width: 600px) 
+{
+    .form-row 
+    {
+        flex-direction: row;
+        gap: 15px;
+    }
+
+    .form-row .form-group 
+    {
+        flex: 1;
+    }
+}
+
+/*Десктоп (від 1024px): main + aside через grid*/
+@media (min-width: 1024px) 
+{
+    body 
+    {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        grid-template-areas:
+            "header header"
+            "main   aside"
+            "footer footer";
+    }
+
+    header 
+    {
+        grid-area: header;
+    }
+
+    main 
+    {
+        grid-area: main;
+        max-width: none;
+        padding: 30px;
+    }
+
+    aside 
+    {
+        grid-area: aside;
+        max-width: none;
+        margin: 30px 20px 30px 0;
+        padding: 25px;
+        align-self: start;
+        position: sticky;
+        top: 20px;
+    }
+
+    footer 
+    {
+        grid-area: footer;
+    }
 }
