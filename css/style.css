@@ -1,3 +1,16 @@
+:root {
+    --color-primary: #0f766e;
+    --color-primary-dark: #0b5750;
+    --color-bg: #fdf6ec;
+    --color-surface: #ffffff;
+    --color-text: #2d2a26;
+    --color-text-muted: #736D64;
+    --color-accent: #f97316;
+    --color-income: #12823B;
+    --color-expense: #e11d48;
+    --color: #ffffff
+}
+
 /* глобальний reset на початку файлу стилів */
 *, *::before, *::after 
 {
@@ -16,8 +29,8 @@ body
     font-family: Arial, sans-serif;
     font-size: 1rem;
     line-height: 1.5;
-    color: #333333;
-    background-color: #c7f2c7;
+    color: var(--color-text);
+    background-color: var(--color-bg);
 }
 
 header
@@ -26,22 +39,22 @@ header
     flex-wrap: wrap;
     align-items: center;
     gap: 20px;
-    background-color: #40a945;
     padding: 20px;
-    border-bottom: 3px solid #1f5322;
+    background-color: var(--color-primary);
+    border-bottom: 3px solid var(--color-primary-dark);
 }
 
 header h1 
 {
     margin: 0;
     font-size: 2rem;
-    color: #e4f1e4;
+    color: var(--color);
 }
 
 nav a 
 {
     margin-right: 20px;
-    color: #e4f1e4;
+    color: var(--color);
     text-decoration: none;
 }
 
@@ -71,7 +84,7 @@ section
     background-color: #ffffff;
 }
 
-/* ===== Форма "Додати операцію" ===== */
+/* Форма "Додати операцію"*/
 /* Мобільний за замовчуванням: усі поля в стовпчик */
 .transaction-form 
 {
@@ -111,7 +124,7 @@ section
 .transaction-form select:focus 
 {
     outline: none;
-    border-color: #40a945;
+    border-color: var(--color-primary);
 }
 
 .transaction-form button 
@@ -119,18 +132,18 @@ section
     padding: 8px 16px;
     border: none;
     border-radius: 4px;
-    background-color: #40a945;
-    color: #ffffff;
+    background-color: var(--color-primary);
+    color: var(--color);
     font-size: 1rem;
     cursor: pointer;
 }
 
 .transaction-form button:hover 
 {
-    background-color: #1f5322;
+    background-color: var(--color-primary-dark);
 }
 
-/* ===== Записи операцій — рядки (без карток-сітки) ===== */
+/* Записи операцій — рядки (без карток-сітки) */
 .transaction 
 {
     padding: 10px;
@@ -151,13 +164,13 @@ section
 
 .amount--income 
 {
-    color: #2e7d32;
+    color: var(--color-income);
     font-weight: bold;
 }
 
 .amount--expense 
 {
-    color: #c62828;
+    color: var(--color-expense);
     font-weight: bold;
 }
 
@@ -166,9 +179,10 @@ aside
     max-width: 900px;
     margin: 0 auto 30px;
     padding: 20px;
-    background-color: #e8f5e9;
-    border: 1px solid #a5d6a7;
+    background-color: var(--color-surface);
+    border-left: 6px solid var(--color-accent);
     border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(15, 118, 110, 0.12);
 }
 
 aside h2 
@@ -181,7 +195,7 @@ aside p
     margin-bottom: 0;
     font-size: 2rem;
     font-weight: bold;
-    color: #2e7d32;
+    color: var(--color-income);
 }
 
 footer 
@@ -189,7 +203,7 @@ footer
     padding: 20px;
     text-align: center;
     font-size: 0.875rem;
-    color: #777777;
+    color: var(--color-text-muted);
 }
 
 /*Планшет (від 600px): поля форми в ряд*/
