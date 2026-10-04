@@ -7,8 +7,8 @@
     --color-text-muted: #736D64;
     --color-accent: #f97316;
     --color-income: #12823B;
-    --color-expense: #e11d48;
-    --color: #ffffff
+    --color-expense: #be123c;
+    --color: #ffffff;
 }
 
 /* глобальний reset на початку файлу стилів */
@@ -174,6 +174,27 @@ section
     font-weight: bold;
 }
 
+.category 
+{
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: bold;
+}
+
+.category--income 
+{
+    color: var(--color-income);
+    background-color: #e8f5e9;
+}
+
+.category--expense 
+{
+    color: var(--color-expense);
+    background-color: #fce7ef;
+}
+
 aside 
 {
     max-width: 900px;
@@ -196,6 +217,16 @@ aside p
     font-size: 2rem;
     font-weight: bold;
     color: var(--color-income);
+}
+
+.balance--positive 
+{
+    color: var(--color-income);
+}
+
+.balance--negative 
+{
+    color: var(--color-expense);
 }
 
 footer 
