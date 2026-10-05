@@ -16,7 +16,6 @@
     <main>
 
         <!-- Форма додавання витрати/доходу -->
-         
         <section>
             <h2>Додати операцію</h2>
 
@@ -50,25 +49,14 @@
             </form>
         </section>
 
-        <!-- Список операцій -->
+        <!-- Список операцій: id додано для доступу через JS -->
         <section>
             <h2>Операції</h2>
-
-            <article class="transaction">
-                <h3>
-                    <span class="amount amount--expense">-25 €</span>
-                    —
-                    <span class="category category--expense">Продукти</span>
-                </h3>
-            </article>
-
-            <article class="transaction">
-                <h3>
-                    <span class="amount amount--income">+100 €</span>
-                    —
-                    <span class="category category--income">Дохід</span>
-                </h3>
-            </article>
+            <!-- Статичний приклад — орієнтир розмітки, видаляється програмно на старті script.js -->
+            <ul id="transactions-list">
+                <li class="transaction">25 грн (витрата)</li>
+                <li class="transaction">100 грн (дохід)</li>
+            </ul>
         </section>
 
     </main>
@@ -76,15 +64,13 @@
     <!-- Блок підсумкового балансу -->
     <aside>
         <h2>Підсумковий баланс</h2>
-        <p class="balance balance--positive">75 €</p>
+        <p id="balance" class="balance balance--positive">75 €</p>
     </aside>
 
     <!-- Підвал -->
     <footer>
         <p>Автор: Marharyta Starodubtseva</p>
     </footer>
-
-    <script src="js/app.js"></script>
 
 </body>
 </html>

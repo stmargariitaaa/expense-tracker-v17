@@ -155,6 +155,18 @@ section
     border-bottom: none;
 }
 
+.transaction.income
+{
+    color: var(--color-income);
+    font-weight: bold;
+}
+
+.transaction.expense
+{
+    color: var(--color-expense);
+    font-weight: bold;
+}
+
 .transaction h3 
 {
     margin: 0;
