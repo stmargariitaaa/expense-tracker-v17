@@ -6,8 +6,10 @@
     --color-text: #2d2a26;
     --color-text-muted: #736D64;
     --color-accent: #f97316;
-    --color-income: #12823B;
+    --color-income: #0f6b2f;
+    --color-income-bg: #e8f5e9;
     --color-expense: #be123c;
+    --color-expense-bg: #fce7ef;
     --color: #ffffff;
 }
 
@@ -27,10 +29,30 @@ body
 {
     margin: 0;
     font-family: Arial, sans-serif;
-    font-size: 1rem;
+    font-size: 1rem;          /* 16px */
     line-height: 1.5;
     color: var(--color-text);
     background-color: var(--color-bg);
+}
+
+h1
+{
+    font-size: 2rem;          /* 32px */
+}
+ 
+h2
+{
+    margin: 0 0 12px;
+    font-size: 1.5rem;        /* 24px */
+    font-weight: bold;
+    line-height: 1.3;
+}
+ 
+h3
+{
+    font-size: 1.125rem;      /* 18px */
+    font-weight: 600;
+    line-height: 1.4;
 }
 
 header
@@ -47,7 +69,7 @@ header
 header h1 
 {
     margin: 0;
-    font-size: 2rem;
+    font-size: 2rem;          /* 32px */
     color: var(--color);
 }
 
@@ -186,31 +208,44 @@ section
     font-weight: bold;
 }
 
+/* Кольорова мітка категорії (бейдж).
+   Контраст тексту до фону мітки: дохід 5.90:1, витрата 5.33:1 (≥ 4.5:1). */
+
 .category 
 {
     display: inline-block;
     padding: 2px 8px;
     border-radius: 999px;
-    font-size: 0.875rem;
+    font-size: 0.875rem;      /* 14px */
     font-weight: bold;
 }
 
 .category--income 
 {
     color: var(--color-income);
-    background-color: #e8f5e9;
+    background-color: var(--color-income-bg);
 }
 
 .category--expense 
 {
     color: var(--color-expense);
-    background-color: #fce7ef;
+    background-color: var(--color-expense-bg);
 }
+
+
+/* НЕЧІТКА ВИМОГА: «має бути зрозуміло з першого погляду, чи все гаразд із бюджетом».
+   Підсумковий баланс стоїть у HTML одразу після header, тому він перший
+   інформаційний блок на сторінці на будь-якому екрані — користувач бачить його
+   ще до форми й списку операцій. Це найбільший текст на сторінці (2.5rem, bold,
+   більший за h1), на білій картці з тінню та акцентною смугою зліва. Колір суми
+   залежить від знака: зелений (баланс ≥ 0) або червоний (баланс < 0), тож стан
+   бюджету зчитується кольором і розміром без читання тексту. */
 
 aside 
 {
-    max-width: 900px;
-    margin: 0 auto 30px;
+    width: calc(100% - 40px);
+    max-width: 860px;
+    margin: 20px auto 0;
     padding: 20px;
     background-color: var(--color-surface);
     border-left: 6px solid var(--color-accent);
@@ -221,14 +256,15 @@ aside
 aside h2 
 {
     margin-top: 0;
+    margin-bottom: 4px;
 }
 
 aside p 
 {
-    margin-bottom: 0;
-    font-size: 2rem;
+    margin: 0;
+    font-size: 2.5rem;        /* 40px — найбільший елемент сторінки */
     font-weight: bold;
-    color: var(--color-income);
+    line-height: 1.1;
 }
 
 .balance--positive 
@@ -264,44 +300,17 @@ footer
     }
 }
 
-/*Десктоп (від 1024px): main + aside через grid*/
+/*Десктоп (від 1024px): баланс — широка смуга над вмістом, більше простору*/
 @media (min-width: 1024px) 
 {
-    body 
+    aside 
     {
-        display: grid;
-        grid-template-columns: 3fr 1fr;
-        grid-template-areas:
-            "header header"
-            "main   aside"
-            "footer footer";
-    }
-
-    header 
-    {
-        grid-area: header;
+        margin-top: 30px;
+        padding: 25px 30px;
     }
 
     main 
     {
-        grid-area: main;
-        max-width: none;
-        padding: 30px;
-    }
-
-    aside 
-    {
-        grid-area: aside;
-        max-width: none;
-        margin: 30px 20px 30px 0;
-        padding: 25px;
-        align-self: start;
-        position: sticky;
-        top: 20px;
-    }
-
-    footer 
-    {
-        grid-area: footer;
+        padding: 30px 20px;
     }
 }

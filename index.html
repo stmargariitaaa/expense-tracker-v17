@@ -13,6 +13,12 @@
         <h1>Трекер витрат</h1>
     </header>
 
+    <!-- Блок підсумкового балансу: одразу після header, тобто угорі сторінки -->
+    <aside>
+        <h2>Підсумковий баланс</h2>
+        <p id="balance" class="balance balance--positive">75 €</p>
+    </aside>
+
     <main>
 
         <!-- Форма додавання витрати/доходу -->
@@ -49,23 +55,28 @@
             </form>
         </section>
 
-        <!-- Список операцій: id додано для доступу через JS -->
-        <section>
+        <!-- Список операцій -->
+        <section id="transactions-list">
             <h2>Операції</h2>
-            <!-- Статичний приклад — орієнтир розмітки, видаляється програмно на старті script.js -->
-            <ul id="transactions-list">
-                <li class="transaction">25 грн (витрата)</li>
-                <li class="transaction">100 грн (дохід)</li>
-            </ul>
+
+            <article class="transaction">
+                <h3>
+                    <span class="amount amount--expense">-25 €</span>
+                    —
+                    <span class="category category--expense">Продукти</span>
+                </h3>
+            </article>
+
+            <article class="transaction">
+                <h3>
+                    <span class="amount amount--income">+100 €</span>
+                    —
+                    <span class="category category--income">Дохід</span>
+                </h3>
+            </article>
         </section>
 
     </main>
-
-    <!-- Блок підсумкового балансу -->
-    <aside>
-        <h2>Підсумковий баланс</h2>
-        <p id="balance" class="balance balance--positive">75 €</p>
-    </aside>
 
     <!-- Підвал -->
     <footer>
