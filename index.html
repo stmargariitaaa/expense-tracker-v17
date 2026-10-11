@@ -7,13 +7,15 @@
     <script src="script.js" defer></script>
     <title>Трекер витрат</title>
 </head>
+
 <body>
 
     <header>
         <h1>Трекер витрат</h1>
     </header>
 
-    <!-- Блок підсумкового балансу: одразу після header, тобто угорі сторінки -->
+    <!-- Блок підсумкового балансу: одразу після header, тобто угорі сторінки.
+         id="balance" потрібен для оновлення тексту й класу з script.js -->
     <aside>
         <h2>Підсумковий баланс</h2>
         <p id="balance" class="balance balance--positive">75 €</p>
@@ -25,55 +27,66 @@
         <section>
             <h2>Додати операцію</h2>
 
-            <form class="transaction-form">
+            <form class="transaction-form" id="transaction-form">
                 <div class="form-group">
-                    <label for="operation-type">Тип операції:</label>
-                    <select id="operation-type" name="operation-type">
-                        <option value="expense">Витрата</option>
-                        <option value="income">Дохід</option>
+                    <label for="type">Тип операції:</label>
+                    <select id="type" name="type" required>
+                        <option value="витрата">Витрата</option>
+                        <option value="дохід">Дохід</option>
                     </select>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="amount">Сума:</label>
-                        <input type="number" id="amount" name="amount">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="category">Категорія:</label>
-                        <input type="text" id="category" name="category">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="date">Дата:</label>
-                        <input type="date" id="date" name="date">
-                    </div>
+                        <input
+                            type="number"
+                            id="amount"
+                            name="amount"
+                            min="0.01"
+                            step="0.01"
+                            required
+                        >
+                    <!-- Власне повідомлення про помилку для нуля/від'ємного значення -->
+                    <span class="field-error" id="amount-error"></span>
                 </div>
 
-                <button type="submit">Додати операцію</button>
-            </form>
+                <div class="form-group">
+                    <label for="category">Категорія:</label>
+                    <input type="text" id="category" name="category" required>
+                </div>
+
+                <!-- Поле "Дата" не входить до переліку полів варіанта (amount, type, category) -->
+                <div class="form-group">
+                    <label for="date">Дата:</label>
+                    <input type="date" id="date" name="date">
+                </div>
+            </div>
+
+            <button type="submit">Додати операцію</button>
+        
+        </form>
         </section>
 
-        <!-- Список операцій -->
-        <section id="transactions-list">
+        <!-- Список операцій: id додано для доступу через JS -->
+        <section>
             <h2>Операції</h2>
 
-            <article class="transaction">
-                <h3>
-                    <span class="amount amount--expense">-25 €</span>
-                    —
-                    <span class="category category--expense">Продукти</span>
-                </h3>
-            </article>
+            <!-- Фільтрація списку операцій за типом -->
+            <div class="form-group">
+                <label for="filter-type">Показати:</label>
+                <select id="filter-type">
+                    <option value="all">Усі</option>
+                    <option value="дохід">Дохід</option>
+                    <option value="витрата">Витрата</option>
+                </select>
+            </div>
 
-            <article class="transaction">
-                <h3>
-                    <span class="amount amount--income">+100 €</span>
-                    —
-                    <span class="category category--income">Дохід</span>
-                </h3>
-            </article>
+            <!-- Статичний приклад — орієнтир розмітки, видаляється програмно на старті script.js -->
+            <ul id="transactions-list">
+                <li class="transaction">25 грн (витрата)</li>
+                <li class="transaction">100 грн (дохід)</li>
+            </ul>
         </section>
 
     </main>

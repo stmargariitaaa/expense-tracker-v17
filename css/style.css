@@ -106,6 +106,13 @@ section
     background-color: #ffffff;
 }
 
+#transactions-list 
+{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
 /* Форма "Додати операцію"*/
 /* Мобільний за замовчуванням: усі поля в стовпчик */
 .transaction-form 
@@ -132,8 +139,7 @@ section
 }
 
 .transaction-form input,
-.transaction-form select 
-{
+.transaction-form select {
     padding: 8px 10px;
     border: 1px solid #cccccc;
     border-radius: 4px;
@@ -165,6 +171,21 @@ section
     background-color: var(--color-primary-dark);
 }
 
+/* Стилі для select фільтра списку операцій */
+#filter-type {
+    padding: 8px 10px;
+    border: 1px solid var(--color);
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+    width: 100%;
+}
+
+#filter-type:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
 /* Записи операцій — рядки (без карток-сітки) */
 .transaction 
 {
@@ -189,12 +210,6 @@ section
     font-weight: bold;
 }
 
-.transaction h3 
-{
-    margin: 0;
-    font-size: 1rem;
-    font-weight: normal;
-}
 
 .amount--income 
 {
