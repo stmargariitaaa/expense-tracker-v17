@@ -1,3 +1,7 @@
+// URL ендпоінта винесено в окрему константу 
+// зручно змінювати в одному місці, не шукаючи по всьому файлу
+//const API_URL = 'https://doesnotexist';
+const API_URL = 'https://jsonplaceholder.typicode.com/comments?postId=2';
 // Видаляємо статичні li-приклади,
 // щоб продемонструвати динамічне видалення через DOM
 document.querySelectorAll('#transactions-list .transaction').forEach(el => el.remove());
@@ -164,3 +168,162 @@ filterSelect.addEventListener('change', function () {
     listContainer.innerHTML = '';
     renderOperations(filteredOperations);
 });
+
+
+// вибираємо елемент-індикатор завантаження та помилки, перезавантаження
+const loadingIndicator = document.querySelector('#loading-indicator');
+const loadError = document.querySelector('#load-error');
+const retryButton = document.querySelector('#retry-button');
+const refreshButton = document.querySelector('#refresh-button');
+
+
+// async-функція запиту даних з API 
+// містить увесь цикл: fetch -> очікування відповіді -> парсинг JSON -> виведення результату
+async function loadData() {
+
+    // показуємо індикатор одразу перед початком запиту,
+    // до виклику fetch — користувач бачить, що завантаження почалося
+    loadingIndicator.hidden = false;
+    // перед новою спробою ховаємо попереднє повідомлення про помилку —
+    // якщо раніше був збій, а зараз запит повторюється, старе повідомлення не має лишатись
+    loadError.hidden = true;
+    loadError.textContent = '';
+    retryButton.hidden = true;
+
+    try {
+        // виконуємо запит і чекаємо відповідь усередині try
+        const response = await fetch(API_URL);
+
+        // fetch не кидає помилку сам на 404/500 — перевіряємо response.ok вручну;
+        // якщо статус не в діапазоні 200-299, кидаємо власну помилку з описовим повідомленням
+        if (!response.ok) {
+            throw new Error(`Помилка завантаження даних: HTTP ${response.status}`);
+        }
+
+        // розбираємо тіло відповіді як JSON
+        // отримуємо масив об'єктів-коментарів зі структурою { postId, id, name, email, body }
+        const data = await response.json();
+
+        // адаптуємо поля відповіді API під форму об'єкта операції
+        // яку очікує renderOperations (amount, type) з практикуму 7
+        // Варіант визначає: name - призначення витрати, body - коментар
+        // власного числового поля "сума" API не повертає, тому як умовну суму
+        // використано id запису (унікальне ціле число) - прийнятно для мок-даних
+        const apiOperations = data.map(comment => ({
+            amount: comment.id,
+            type: 'витрата',
+            category: comment.name,
+            comment: comment.body
+        }));
+
+        listContainer.innerHTML = '';
+        renderOperations(apiOperations);
+            } catch (error) {
+                // користувачу — зрозуміле повідомлення без технічних деталей винятку
+                // розробнику — повний текст помилки в консоль
+                loadError.textContent = 'Не вдалося завантажити операції. Спробуйте оновити сторінку пізніше.';
+                loadError.hidden = false;
+                retryButton.hidden = false;
+                console.error('Помилка завантаження даних:', error);
+            } finally {
+        // ховаємо індикатор у finally — цей блок виконується
+        // завжди, незалежно від того, чи try завершився успішно, чи впав у catch
+        loadingIndicator.hidden = true;
+    }
+}
+
+retryButton.addEventListener('click', loadData);
+
+// кнопка "Оновити" — дозволяє користувачу повторно
+// викликати loadData() вручну в будь-який момент, без перезавантаження сторінки
+refreshButton.addEventListener('click', loadData);
+
+// викликаємо функцію одразу, щоб перевірити роботу запиту
+loadData();
+
+// Бонус: конвертація суми в іншу валюту через Frankfurter API
+// Документація: https://api.frankfurter.app/
+const CONVERT_API_URL = 'https://api.frankfurter.dev/v1/latest';
+
+const convertForm = document.querySelector('#convert-form');
+const convertAmount = document.querySelector('#convert-amount');
+const convertFrom = document.querySelector('#convert-from');
+const convertTo = document.querySelector('#convert-to');
+const convertLoading = document.querySelector('#convert-loading');
+const convertResult = document.querySelector('#convert-result');
+const convertError = document.querySelector('#convert-error');
+
+
+// Frankfurter не підтримує гривню, тому для пар з UAH беремо офіційний курс НБУ
+const NBU_API_URL = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange';
+
+// повертає курс іноземної валюти до гривні: { rate, date }
+async function getNbuRate(code) {
+    const response = await fetch(`${NBU_API_URL}?valcode=${code}&json`);
+    if (!response.ok) {
+        throw new Error(`Помилка НБУ: HTTP ${response.status}`);
+    }
+    const data = await response.json();
+    if (data.length === 0) {
+        throw new Error(`НБУ не повернув курс для ${code}`);
+    }
+    return { rate: data[0].rate, date: data[0].exchangedate };
+}
+
+
+async function convertCurrency(event) {
+    event.preventDefault();
+
+    const amount = convertAmount.value;
+    const from = convertFrom.value;
+    const to = convertTo.value;
+
+    // очищаємо попередній результат і помилку
+    convertResult.textContent = '';
+    convertError.hidden = true;
+
+    // API повертає помилку, якщо валюти однакові, — перевіряємо наперед
+    if (from === to) {
+        convertError.textContent = 'Оберіть різні валюти для конвертації.';
+        convertError.hidden = false;
+        return;
+    }
+
+    convertLoading.hidden = false;
+
+        try {
+            if (from === 'UAH' || to === 'UAH') {
+                // пара з гривнею: курс НБУ (скільки гривень коштує одиниця іноземної валюти)
+                const foreign = from === 'UAH' ? to : from;
+                const { rate, date } = await getNbuRate(foreign);
+                const converted = from === 'UAH'
+                    ? Number(amount) / rate
+                    : Number(amount) * rate;
+
+                convertResult.textContent =
+                    `${amount} ${from} = ${converted.toFixed(2)} ${to} (курс НБУ на ${date})`;
+            } else {
+                // решта пар: Frankfurter API
+                const url = `${CONVERT_API_URL}?amount=${amount}&from=${from}&to=${to}`;
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`Помилка конвертації: HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                const converted = data.rates[to];
+
+                convertResult.textContent =
+                    `${data.amount} ${data.base} = ${converted} ${to} (курс на ${data.date})`;
+            }
+        } catch (error) {
+            convertError.textContent = 'Не вдалося виконати конвертацію. Спробуйте пізніше.';
+            convertError.hidden = false;
+            console.error('Помилка конвертації:', error);
+        } finally {
+            convertLoading.hidden = true;
+        }
+}
+
+convertForm.addEventListener('submit', convertCurrency);

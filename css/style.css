@@ -186,6 +186,49 @@ section
     border-color: var(--color-primary);
 }
 
+/* Кнопки «Оновити» та «Спробувати ще раз» (поза формою) */
+#refresh-button,
+#retry-button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+    cursor: pointer;
+    margin: 0 0 15px;
+}
+
+/* «Оновити» — основна кнопка, як у формі */
+#refresh-button {
+    border: none;
+    background-color: var(--color-primary);
+    color: var(--color);
+}
+
+#refresh-button:hover {
+    background-color: var(--color-primary-dark);
+}
+
+/* «Спробувати ще раз» — контурна, щоб відрізнялась від основної дії.
+   Контраст #0f766e на білому ≈ 5.5:1 (≥ 4.5:1) */
+#retry-button {
+    border: 2px solid var(--color-primary);
+    background-color: var(--color-surface);
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+#retry-button:hover {
+    background-color: var(--color-primary);
+    color: var(--color);
+}
+
+#refresh-button:focus-visible,
+#retry-button:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+
 /* Записи операцій — рядки (без карток-сітки) */
 .transaction 
 {
