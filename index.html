@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
+    <!-- підключення Vue 3 через CDN (глобальна збірка, змінна Vue) -->
+    <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js" defer></script>
+    <!-- Vue-застосунок із реактивним станом -->
+    <script src="js/vue-app.js" defer></script>
     <script src="script.js" defer></script>
     <title>Трекер витрат</title>
 </head>
@@ -18,7 +22,8 @@
          id="balance" потрібен для оновлення тексту й класу з script.js -->
     <aside>
         <h2>Підсумковий баланс</h2>
-        <p id="balance" class="balance balance--positive">75 €</p>
+        <!-- вміст виводить Vue (teleport з computed-властивості balance) -->
+        <p id="balance"></p>
     </aside>
 
     <main>
@@ -95,10 +100,30 @@
             <button id="retry-button" type="button" hidden>Спробувати ще раз</button>
 
             <!-- Статичний приклад — орієнтир розмітки, видаляється програмно на старті script.js -->
-            <ul id="transactions-list">
+            <!--  <ul id="transactions-list">
                 <li class="transaction">25 грн (витрата)</li>
                 <li class="transaction">100 грн (дохід)</li>
-            </ul>
+            </ul> -->
+
+            <!-- список рендерить Vue-компонент ExpenseRow замість ручного DOM-коду -->
+            <div id="app">
+
+                <teleport to="#balance">
+                    <span :class="balance >= 0 ? 'balance--positive' : 'balance--negative'">{{ balance }} грн</span>
+                </teleport>
+                
+                <ul>
+                    <!-- рендер списку циклом v-for; :key за унікальним id (не за індексом) -->
+                    <expense-row
+                        v-for="op in operations"
+                        :key="op.id"
+                        :amount="op.amount"
+                        :type="op.type"
+                        :category="op.category"
+                        @delete="removeOperation(op.id)"
+                    ></expense-row>
+                </ul>
+            </div>
         </section>
 
         <!-- Бонус: конвертація суми в іншу валюту через Frankfurter API -->

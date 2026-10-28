@@ -1,10 +1,17 @@
+// обрано Vue, бо computed-властивість дозволяє автоматично перераховувати
+// підсумковий баланс при зміні списку операцій без ручного виклику calculateBalance()
+
 // URL ендпоінта винесено в окрему константу 
 // зручно змінювати в одному місці, не шукаючи по всьому файлу
 //const API_URL = 'https://doesnotexist';
 const API_URL = 'https://jsonplaceholder.typicode.com/comments?postId=2';
 // Видаляємо статичні li-приклади,
 // щоб продемонструвати динамічне видалення через DOM
-document.querySelectorAll('#transactions-list .transaction').forEach(el => el.remove());
+
+
+// ручне видалення статичних li більше не потрібне — розмітку списку
+// тепер повністю створює Vue-компонент ExpenseRow
+// document.querySelectorAll('#transactions-list .transaction').forEach(el => el.remove());
 
 // Масив операцій варіанта: сума та тип ('дохід' або 'витрата')
 const operations = [
@@ -12,12 +19,17 @@ const operations = [
     { amount: 100, type: 'дохід' }
 ];
 
-// Контейнер, у який програмно додаватимуться елементи операцій
-const listContainer = document.querySelector('#transactions-list');
+// контейнер для ручного додавання li прибрано — рендер виконує Vue
+// Контейнер, у який програмно додаватимуться елементи% операцій
+//const listContainer = document.querySelector('#transactions-list');
 
 // Рендерить список операцій: циклом forEach проходить масив
 // і для кожної операції створює li з сумою та типом (Кроки 4-7)
-function renderOperations(ops) {
+
+/* Крок 7: ЗАКОМЕНТОВАНО. Функцію ручного рендеру списку з практикуму 7 замінено
+   Vue-компонентом ExpenseRow, який разом із v-for створює рядки операцій
+   (document.createElement, appendChild, append більше не використовуються)
+//function renderOperations(ops) {
     ops.forEach(op => {
         const isIncome = op.type === 'дохід';
         const modifier = isIncome ? 'income' : 'expense';
@@ -56,9 +68,11 @@ function renderOperations(ops) {
 // список з'являється на сторінці при завантаженні
 renderOperations(operations);
 
+*/
+
 // Підсумовує баланс циклом for (дохід додає, витрата віднімає)
 // і через if/else позначає, чи баланс додатний
-function calculateBalance(ops) {
+/*function calculateBalance(ops) {
     let balance = 0;
 
     for (let i = 0; i < ops.length; i++) {
@@ -76,9 +90,9 @@ function calculateBalance(ops) {
     }
 
     return balance;
-}
+} */
 
-const totalBalance = calculateBalance(operations);
+//const totalBalance = calculateBalance(operations);
 
 // Стрілкова функція: обчислює, скільки відсотків становить
 // частина (part) від загальної суми (total)
@@ -91,10 +105,10 @@ console.log(`Витрата становить ${expensePercentOfIncome}% від
 
 // оновлюємо вже наявний елемент #balance: текст і клас
 // залежно від знаку підсумкового балансу
-const balanceElement = document.querySelector('#balance');
+/*const balanceElement = document.querySelector('#balance');
 balanceElement.textContent = `${totalBalance} грн`;
 balanceElement.classList.toggle('balance--positive', totalBalance >= 0);
-balanceElement.classList.toggle('balance--negative', totalBalance < 0);
+balanceElement.classList.toggle('balance--negative', totalBalance < 0); */
 
 // вибираємо форму додавання операції за її id
 const form = document.querySelector('#transaction-form');
@@ -137,8 +151,10 @@ form.addEventListener('submit', function (event) {
     // перемальовуємо список — очищуємо контейнер, щоб уникнути
     // дублювання вже показаних li, і викликаємо renderOperations
     // повторно з оновленим масивом operations
-    listContainer.innerHTML = '';
-    renderOperations(operations);
+
+    // ручне перемальовування списку замінено компонентом
+    //listContainer.innerHTML = '';
+    //renderOperations(operations);
 
     // очищуємо форму після успішного додавання операції —
     // усі поля повертаються до початкового (порожнього) стану
@@ -146,10 +162,10 @@ form.addEventListener('submit', function (event) {
 
     // перераховуємо й одразу оновлюємо підсумковий баланс
     // після додавання нової операції (той самий принцип, що в практикумі 7)
-    const updatedBalance = calculateBalance(operations);
+    /* const updatedBalance = calculateBalance(operations);
     balanceElement.textContent = `${updatedBalance} грн`;
     balanceElement.classList.toggle('balance--positive', updatedBalance >= 0);
-    balanceElement.classList.toggle('balance--negative', updatedBalance < 0);
+    balanceElement.classList.toggle('balance--negative', updatedBalance < 0); */
 });
 
 // вибираємо select фільтра списку операцій за типом
@@ -165,8 +181,9 @@ filterSelect.addEventListener('change', function () {
         ? operations
         : operations.filter(op => op.type === selectedType);
 
-    listContainer.innerHTML = '';
-    renderOperations(filteredOperations);
+    // ручне перемальовування списку замінено компонентом
+    // //listContainer.innerHTML = '';
+    //renderOperations(filteredOperations);
 });
 
 
@@ -216,8 +233,10 @@ async function loadData() {
             comment: comment.body
         }));
 
-        listContainer.innerHTML = '';
-        renderOperations(apiOperations);
+        // ручне перемальовування списку замінено компонентом
+        //listContainer.innerHTML = '';
+        //renderOperations(apiOperations);
+
             } catch (error) {
                 // користувачу — зрозуміле повідомлення без технічних деталей винятку
                 // розробнику — повний текст помилки в консоль
