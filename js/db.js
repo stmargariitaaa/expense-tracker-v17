@@ -244,13 +244,3 @@ const migrationDone = migrateFromLocalStorage()
             : 'Міграція не потрібна або вже виконана');
     })
     .catch(error => console.error('Помилка міграції:', error));
-
-
-// запуск міграції при завантаженні сторінки
-migrateFromLocalStorage()
-    .then(count => {
-        console.log(count > 0
-            ? `Міграція: перенесено записів — ${count}`
-            : 'Міграція не потрібна або вже виконана');
-    })
-    .catch(error => console.error('Помилка міграції:', error));
