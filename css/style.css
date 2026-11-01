@@ -380,6 +380,60 @@ footer
     font-size: 0.875rem;
 }
 
+/* суми витрат за категоріями */
+.category-totals li {
+    padding: 4px 0;
+}
+
+/* полотно кругової діаграми витрат */
+.chart-canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto 15px;
+}
+
+/* кольорова позначка в легенді діаграми */
+.legend-swatch {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 8px;
+    border-radius: 2px;
+}
+
+/* Підпис під діаграмою: категорія під курсором */
+.chart-info {
+    min-height: 1.5em;
+    margin: 0 0 10px;
+    text-align: center;
+}
+
+/* Кнопка «Повторити анімацію»: контурна, як «Спробувати ще раз».
+   Контраст #0f766e на білому ≈ 5.5:1 (≥ 4.5:1) */
+#replay-button {
+    margin: 0 0 15px;
+    padding: 8px 16px;
+    border: 2px solid var(--color-primary);
+    border-radius: 4px;
+    background-color: var(--color-surface);
+    color: var(--color-primary);
+    font-size: 1rem;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#replay-button:hover {
+    background-color: var(--color-primary);
+    color: var(--color);
+}
+
+#replay-button:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
 /*Планшет (від 600px): поля форми в ряд*/
 @media (min-width: 600px) 
 {

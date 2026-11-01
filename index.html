@@ -114,9 +114,29 @@
                 <teleport to="#balance">
                     <span :class="balance >= 0 ? 'balance--positive' : 'balance--negative'">{{ balance }} грн</span>
                 </teleport>
-                
-                <!-- повідомлення про недоступність бази даних -->
+
                 <p v-if="dbError" class="field-error" role="alert">{{ dbError }}</p>
+
+                <!-- діаграма й категорії зверху, щоб нові рядки списку не зсували полотно -->
+                <h3>Витрати за категоріями</h3>
+                <canvas ref="chart" class="chart-canvas" width="320" height="320"
+                    role="img" aria-label="Кругова діаграма розподілу витрат за категоріями"
+                    @mousemove="onChartMove" @mouseleave="onChartLeave">
+                    Ваш браузер не підтримує елемент canvas, тому діаграму не можна показати.
+                </canvas>
+
+                <!-- керування діаграмою -->
+                <p class="chart-info" aria-live="polite">{{ hoverText }}</p>
+                <button type="button" id="replay-button" @click="drawChart">Повторити анімацію</button>
+                
+                <ul class="category-totals" v-if="categoryTotals.length">
+                    <li v-for="(item, index) in categoryTotals" :key="item.category">
+                        <span class="legend-swatch" aria-hidden="true"
+                        :style="{ backgroundColor: colorFor(index) }"></span>
+                        {{ item.category }}: {{ item.total }} грн
+                    </li>
+                </ul>
+                <p v-else>Витрат поки немає.</p>
 
                 <ul>
                     <!-- рендер списку циклом v-for; :key за унікальним id (не за індексом) -->
@@ -129,6 +149,7 @@
                         @delete="removeOperation(op.id)"
                     ></expense-row>
                 </ul>
+
             </div>
         </section>
 

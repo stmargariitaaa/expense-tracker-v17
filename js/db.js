@@ -244,3 +244,24 @@ const migrationDone = migrateFromLocalStorage()
             : 'Міграція не потрібна або вже виконана');
     })
     .catch(error => console.error('Помилка міграції:', error));
+
+// підсумовує суми витрат за категоріями: { 'Транспорт': 120, 'Їжа': 300 }
+// доходи не враховуємо: діаграма показує розподіл саме витрат
+function sumByCategory(items) {
+    const totals = {};
+    for (const item of items) {
+        if (item.type === 'витрата') {
+            totals[item.category] = (totals[item.category] || 0) + item.amount;
+        }
+    }
+    return totals;
+}
+
+// перетворює масив операцій на дані для діаграми:
+// [{ category, total }, ...], відсортований за спаданням суми.
+// Єдине місце, де з масиву операцій отримують суми за категоріями
+function getCategoryTotals(items) {
+    return Object.entries(sumByCategory(items))
+        .map(([category, total]) => ({ category, total: Math.round(total * 100) / 100 }))
+        .sort((a, b) => b.total - a.total);
+}
