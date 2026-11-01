@@ -373,6 +373,13 @@ footer
     color: var(--color-text-muted);
 }
 
+/* Повідомлення про помилки (поле суми, завантаження, база даних).
+   Контраст #be123c на білому 6.29:1, на фоні сторінки #fdf6ec 5.86:1 (≥ 4.5:1) */
+.field-error {
+    color: var(--color-expense);
+    font-size: 0.875rem;
+}
+
 /*Планшет (від 600px): поля форми в ряд*/
 @media (min-width: 600px) 
 {

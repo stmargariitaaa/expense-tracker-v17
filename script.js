@@ -131,7 +131,7 @@ amountInput.addEventListener('input', function () {
     }
 });
 
-form.addEventListener('submit', function (event) {
+form.addEventListener('submit', async function (event) {
     // скасовуємо стандартну поведінку браузера (перезавантаження сторінки),
     // бо дані форми обробляються власним JS, а не надсилаються на сервер
     event.preventDefault();
@@ -142,11 +142,22 @@ form.addEventListener('submit', function (event) {
     const typeValue = form.querySelector('#type').value;
     const categoryValue = form.querySelector('#category').value;
 
-    // формуємо новий об'єкт тієї самої форми {amount, type},
-    // що й елементи масиву operations (практикум 6), і додаємо його в масив;
-    // category зберігаємо в даних для повноти, навіть якщо в li вона не відображається
-    const newOperation = { amount: amountValue, type: typeValue, category: categoryValue };
-    operations.push(newOperation);
+    // операцію додаємо в реактивний стан Vue замість старого масиву;
+    // addOperation сам зберігає оновлений масив у localStorage.
+    // Дата з форми; якщо порожня — сьогоднішня у форматі YYYY-MM-DD (локальна)
+    const dateValue = form.querySelector('#date').value || new Date().toLocaleDateString('sv-SE');
+
+    try {
+        await vm.addOperation({
+            amount: amountValue,
+            type: typeValue,
+            category: categoryValue,
+            date: dateValue
+        });
+    } catch (error) {
+        console.error('Не вдалося додати операцію:', error);
+        return;
+    }
 
     // перемальовуємо список — очищуємо контейнер, щоб уникнути
     // дублювання вже показаних li, і викликаємо renderOperations

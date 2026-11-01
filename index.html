@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="css/style.css">
     <!-- підключення Vue 3 через CDN (глобальна збірка, змінна Vue) -->
     <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js" defer></script>
+    <script src="js/db.js" defer></script>
     <!-- Vue-застосунок із реактивним станом -->
     <script src="js/vue-app.js" defer></script>
     <script src="script.js" defer></script>
@@ -112,6 +113,9 @@
                     <span :class="balance >= 0 ? 'balance--positive' : 'balance--negative'">{{ balance }} грн</span>
                 </teleport>
                 
+                <!-- повідомлення про недоступність бази даних -->
+                <p v-if="dbError" class="field-error" role="alert">{{ dbError }}</p>
+
                 <ul>
                     <!-- рендер списку циклом v-for; :key за унікальним id (не за індексом) -->
                     <expense-row

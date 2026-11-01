@@ -5,16 +5,17 @@
 // у data() кореневого компонента, а не у звичайну зовнішню змінну
 const { createApp } = Vue;
 
+// повідомлення користувачу, якщо базу відкрити не вдалося
+// (IndexedDB недоступна, наприклад, у деяких режимах приватного перегляду)
+const DB_ERROR_MESSAGE = 'Не вдалося відкрити локальну базу даних, тому операції не можна завантажити чи зберегти. Можливо, браузер блокує сховище (наприклад, у режимі приватного перегляду). Спробуйте звичайне вікно браузера.';
+
 const app = createApp({
-    // data() — функція, що повертає об'єкт стану; Vue робить його реактивним
     data() {
         return {
-            // поля відповідають props компонента ExpenseRow: amount, type, category
-            // id — унікальний ідентифікатор для :key у v-for
-            operations: [
-                { id: 1, amount: 25, type: 'витрата', category: 'Транспорт' },
-                { id: 2, amount: 100, type: 'дохід', category: 'Зарплата' }
-            ]
+            // джерело даних — IndexedDB; масив заповнює метод refresh()
+            operations: [],
+            // Крок 11: текст помилки бази для користувача (порожній — помилки немає)
+            dbError: ''
         };
     },
 
@@ -30,13 +31,49 @@ const app = createApp({
             return Math.round(total * 100) / 100;
         }
     },
-    
+
+    // після монтування чекаємо завершення міграції (js/db.js),
+    // потім завантажуємо список з IndexedDB
+    async mounted() {
+        await migrationDone;
+        await this.refresh();
+    },
+
     methods: {
-        // обробник події delete від дочірнього компонента:
-        // замість мутації масиву на місці присвоюємо стану новий масив без видаленої операції
-        removeOperation(id) {
-            this.operations = this.operations.filter(op => op.id !== id);
-            console.log('Видалено операцію з id:', id);
+
+                async refresh() {
+            try {
+                this.operations = await getAllItems();
+                this.dbError = '';
+            } catch (error) {
+                // користувачу — зрозуміле повідомлення, розробнику — деталі в консоль
+                this.dbError = DB_ERROR_MESSAGE;
+                console.error('Не вдалося прочитати дані з IndexedDB:', error);
+            }
+        },
+
+        async removeOperation(id) {
+            try {
+                await deleteItem(id);
+                await this.refresh();
+                console.log('Видалено операцію з id:', id);
+            } catch (error) {
+                this.dbError = DB_ERROR_MESSAGE;
+                console.error('Не вдалося видалити операцію:', error);
+            }
+        },
+
+        async addOperation({ amount, type, category, date }) {
+            const transaction = createTransaction({ amount, category, date });
+            try {
+                await addItem({ type, ...transaction });
+                await this.refresh();
+            } catch (error) {
+                this.dbError = DB_ERROR_MESSAGE;
+                // пробрасуємо далі: форма в script.js не очиститься,
+                // і користувач не втратить введені дані
+                throw error;
+            }
         }
     }
 });
