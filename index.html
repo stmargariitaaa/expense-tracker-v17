@@ -9,16 +9,23 @@
     <script src="js/db.js" defer></script>
     <!-- Canvas-діаграма витрат за категоріями -->
     <script src="js/chart.js" defer></script>
+    <!-- hash-роутер -->
+    <script src="js/router.js" defer></script>
     <!-- Vue-застосунок із реактивним станом -->
     <script src="js/vue-app.js" defer></script>
     <script src="script.js" defer></script>
     <title>Трекер витрат</title>
+    <link rel="icon" href="data:,">
 </head>
 
 <body>
 
     <header>
         <h1>Трекер витрат</h1>
+        <nav aria-label="Основне меню">
+            <a href="#/" data-link data-page="home">Головна</a>
+            <a href="#/stats" data-link data-page="stats">Статистика</a>
+        </nav>
     </header>
 
     <!-- Блок підсумкового балансу: одразу після header, тобто угорі сторінки.
@@ -29,120 +36,98 @@
         <p id="balance"></p>
     </aside>
 
-    <main>
+    
+    <!-- єдиний контейнер, у якому відображаються всі «сторінки» застосунку -->
+    <main id="app">
 
-        <!-- Форма додавання витрати/доходу -->
-        <section>
-            <h2>Додати операцію</h2>
+        <!-- баланс виводиться в блок #balance над контейнером -->
+        <teleport to="#balance">
+            <span :class="balance >= 0 ? 'balance--positive' : 'balance--negative'">{{ balance }} грн</span>
+        </teleport>
 
-            <form class="transaction-form" id="transaction-form">
+        <!-- повідомлення про недоступність бази даних (усі сторінки) -->
+        <p v-if="dbError" class="field-error" role="alert">{{ dbError }}</p>
+
+        <!-- Сторінка «/»: форма додавання та останні операції.
+             Приховується через v-show, а не видаляється: у ній статичні елементи
+             з обробниками з script.js (форма, кнопки оновлення, конвертер) -->
+        <div v-show="route.page === 'home'">
+
+            <!-- Форма додавання витрати/доходу -->
+            <section>
+                <h2>Додати операцію</h2>
+
+                <form class="transaction-form" id="transaction-form">
+                    <div class="form-group">
+                        <label for="type">Тип операції:</label>
+                        <select id="type" name="type" required>
+                            <option value="витрата">Витрата</option>
+                            <option value="дохід">Дохід</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="amount">Сума:</label>
+                            <input
+                                type="number"
+                                id="amount"
+                                name="amount"
+                                min="0.01"
+                                step="0.01"
+                                required
+                            >
+                            <!-- Власне повідомлення про помилку для нуля/від'ємного значення -->
+                            <span class="field-error" id="amount-error"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="category">Категорія:</label>
+                            <input type="text" id="category" name="category" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date">Дата:</label>
+                            <input type="date" id="date" name="date">
+                        </div>
+                    </div>
+
+                    <button type="submit">Додати операцію</button>
+                </form>
+            </section>
+
+            <!-- Останні операції -->
+            <section>
+                <h2>Останні операції</h2>
+
+                <!-- Фільтрація списку операцій за типом -->
                 <div class="form-group">
-                    <label for="type">Тип операції:</label>
-                    <select id="type" name="type" required>
-                        <option value="витрата">Витрата</option>
+                    <label for="filter-type">Показати:</label>
+                    <select id="filter-type">
+                        <option value="all">Усі</option>
                         <option value="дохід">Дохід</option>
+                        <option value="витрата">Витрата</option>
                     </select>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="amount">Сума:</label>
-                        <input
-                            type="number"
-                            id="amount"
-                            name="amount"
-                            min="0.01"
-                            step="0.01"
-                            required
-                        >
-                    <!-- Власне повідомлення про помилку для нуля/від'ємного значення -->
-                    <span class="field-error" id="amount-error"></span>
-                </div>
+                <!-- Індикатор завантаження даних з API — прихований за замовчуванням -->
+                <p id="loading-indicator" hidden>Завантаження операцій...</p>
 
-                <div class="form-group">
-                    <label for="category">Категорія:</label>
-                    <input type="text" id="category" name="category" required>
-                </div>
+                <!-- Повідомлення про помилку завантаження — прихований за замовчуванням -->
+                <p id="load-error" class="field-error" hidden></p>
 
-                <!-- Поле "Дата" не входить до переліку полів варіанта (amount, type, category) -->
-                <div class="form-group">
-                    <label for="date">Дата:</label>
-                    <input type="date" id="date" name="date">
-                </div>
-            </div>
+                <!-- кнопка ручного оновлення, видима завжди -->
+                <button id="refresh-button" type="button">Оновити</button>
 
-            <button type="submit">Додати операцію</button>
-        
-        </form>
-        </section>
-
-        <!-- Список операцій: id додано для доступу через JS -->
-        <section>
-            <h2>Операції</h2>
-
-            <!-- Фільтрація списку операцій за типом -->
-            <div class="form-group">
-                <label for="filter-type">Показати:</label>
-                <select id="filter-type">
-                    <option value="all">Усі</option>
-                    <option value="дохід">Дохід</option>
-                    <option value="витрата">Витрата</option>
-                </select>
-            </div>
-
-            <!-- Індикатор завантаження даних з API — прихований за замовчуванням -->
-            <p id="loading-indicator" hidden>Завантаження операцій...</p>
-
-            <!-- Повідомлення про помилку завантаження — прихований за замовчуванням -->
-            <p id="load-error" class="field-error" hidden></p>
-
-            <!-- Крок 10: кнопка ручного оновлення списку операцій, видима завжди -->
-            <button id="refresh-button" type="button">Оновити</button>
-
-            <!-- Кнопка повторної спроби завантаження без перезавантаження всієї сторінки -->
-            <button id="retry-button" type="button" hidden>Спробувати ще раз</button>
-
-            <!-- Статичний приклад — орієнтир розмітки, видаляється програмно на старті script.js -->
-            <!--  <ul id="transactions-list">
-                <li class="transaction">25 грн (витрата)</li>
-                <li class="transaction">100 грн (дохід)</li>
-            </ul> -->
-
-            <!-- список рендерить Vue-компонент ExpenseRow замість ручного DOM-коду -->
-            <div id="app">
-
-                <teleport to="#balance">
-                    <span :class="balance >= 0 ? 'balance--positive' : 'balance--negative'">{{ balance }} грн</span>
-                </teleport>
-
-                <p v-if="dbError" class="field-error" role="alert">{{ dbError }}</p>
-
-                <!-- діаграма й категорії зверху, щоб нові рядки списку не зсували полотно -->
-                <h3>Витрати за категоріями</h3>
-                <canvas ref="chart" class="chart-canvas" width="320" height="320"
-                    role="img" aria-label="Кругова діаграма розподілу витрат за категоріями"
-                    @mousemove="onChartMove" @mouseleave="onChartLeave">
-                    Ваш браузер не підтримує елемент canvas, тому діаграму не можна показати.
-                </canvas>
-
-                <!-- керування діаграмою -->
-                <p class="chart-info" aria-live="polite">{{ hoverText }}</p>
-                <button type="button" id="replay-button" @click="drawChart">Повторити анімацію</button>
-                
-                <ul class="category-totals" v-if="categoryTotals.length">
-                    <li v-for="(item, index) in categoryTotals" :key="item.category">
-                        <span class="legend-swatch" aria-hidden="true"
-                        :style="{ backgroundColor: colorFor(index) }"></span>
-                        {{ item.category }}: {{ item.total }} грн
-                    </li>
-                </ul>
-                <p v-else>Витрат поки немає.</p>
+                <!-- Кнопка повторної спроби завантаження без перезавантаження всієї сторінки -->
+                <button id="retry-button" type="button" hidden>Спробувати ще раз</button>
 
                 <ul>
                     <!-- рендер списку циклом v-for; :key за унікальним id (не за індексом) -->
                     <expense-row
-                        v-for="op in operations"
+                        v-for="op in recentOperations"
                         :key="op.id"
+                        :transaction-id="op.id"
                         :amount="op.amount"
                         :type="op.type"
                         :category="op.category"
@@ -150,48 +135,137 @@
                     ></expense-row>
                 </ul>
 
-            </div>
+                <p><a href="#/stats" class="link-button" data-link>Статистика за категоріями →</a></p>
+            </section>
+
+            <!-- Бонус: конвертація суми в іншу валюту через Frankfurter API -->
+            <section>
+                <h2>Конвертація валюти</h2>
+
+                <form class="transaction-form" id="convert-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="convert-amount">Сума:</label>
+                            <input type="number" id="convert-amount" min="0.01" step="0.01" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="convert-from">З валюти:</label>
+                            <select id="convert-from">
+                                <option value="UAH">UAH</option>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="PLN">PLN</option>
+                                <option value="GBP">GBP</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="convert-to">В валюту:</label>
+                            <select id="convert-to">
+                                <option value="EUR">EUR</option>
+                                <option value="USD">USD</option>
+                                <option value="PLN">PLN</option>
+                                <option value="GBP">GBP</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit">Конвертувати</button>
+                </form>
+
+                <p id="convert-loading" hidden>Конвертація...</p>
+                <p id="convert-result"></p>
+                <p id="convert-error" class="field-error" hidden></p>
+            </section>
+        </div>
+
+        <!-- Сторінка «/transaction/:id»: деталі однієї операції -->
+        <section v-if="route.page === 'transaction'">
+            <h2>Операція №{{ route.params.id }}</h2>
+            <p><a href="#/" class="link-button" data-link>← На головну</a></p>
+
+            <p v-if="!loaded">Завантаження…</p>
+            <dl v-else-if="currentTransaction" class="transaction-details">
+                <dt>Тип</dt>
+                <dd>{{ currentTransaction.type }}</dd>
+                <dt>Сума</dt>
+                <dd>{{ currentTransaction.amount }} грн</dd>
+                <dt>Категорія</dt>
+                <dd>
+                    <a v-if="currentTransaction.type === 'витрата'"
+                       :href="'#/category/' + encodeURIComponent(currentTransaction.category)"
+                       data-link>{{ currentTransaction.category }}</a>
+                    <span v-else>{{ currentTransaction.category }}</span>
+                </dd>
+                <dt>Дата</dt>
+                <dd>{{ currentTransaction.date }}</dd>
+            </dl>
+            <p v-else>Операції з номером {{ route.params.id }} не знайдено.</p>
         </section>
 
-        <!-- Бонус: конвертація суми в іншу валюту через Frankfurter API -->
-        <section>
-            <h2>Конвертація валюти</h2>
+        <!-- Сторінка «/stats»: діаграма та суми витрат за категоріями (практикум 11) -->
+        <section v-if="route.page === 'stats'">
+            <h2>Статистика витрат</h2>
+            <p><a href="#/" data-link>← На головну</a></p>
 
-            <form class="transaction-form" id="convert-form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="convert-amount">Сума:</label>
-                        <input type="number" id="convert-amount" min="0.01" step="0.01" required>
-                    </div>
+            <canvas ref="chart" class="chart-canvas" width="320" height="320"
+                role="img" aria-label="Кругова діаграма розподілу витрат за категоріями"
+                @mousemove="onChartMove" @mouseleave="onChartLeave">
+                Ваш браузер не підтримує елемент canvas, тому діаграму не можна показати.
+            </canvas>
 
-                    <div class="form-group">
-                        <label for="convert-from">З валюти:</label>
-                        <select id="convert-from">
-                            <option value="UAH">UAH</option>
-                            <option value="USD">USD</option>
-                            <option value="EUR">EUR</option>
-                            <option value="PLN">PLN</option>
-                            <option value="GBP">GBP</option>
-                        </select>
-                    </div>
+            <p class="chart-info" aria-live="polite">{{ hoverText }}</p>
+            <button type="button" id="replay-button" @click="drawChart">Повторити анімацію</button>
 
-                    <div class="form-group">
-                        <label for="convert-to">В валюту:</label>
-                        <select id="convert-to">
-                            <option value="EUR">EUR</option>
-                            <option value="USD">USD</option>
-                            <option value="PLN">PLN</option>
-                            <option value="GBP">GBP</option>
-                        </select>
-                    </div>
-                </div>
+            <h3>Витрати за категоріями</h3>
+            <ul class="category-totals" v-if="categoryTotals.length">
+                <li v-for="(item, index) in categoryTotals" :key="item.category">
+                    <!-- картка категорії — посилання на сторінку цієї категорії -->
+                    <a :href="'#/category/' + encodeURIComponent(item.category)" data-link>
+                        <span class="legend-swatch" aria-hidden="true"
+                            :style="{ backgroundColor: colorFor(index) }"></span>
+                        {{ item.category }}: {{ item.total }} грн
+                    </a>
+                </li>
+            </ul>
+            <p v-else>Витрат поки немає.</p>
+        </section>
 
-                <button type="submit">Конвертувати</button>
-            </form>
+                <!-- Сторінка «/category/:category»: витрати за конкретною категорією -->
+        <section v-if="route.page === 'category'">
+            <h2>Витрати: {{ route.params.category }}</h2>
+            <p>
+                <a href="#/stats" data-link>← До статистики</a> ·
+                <a href="#/" data-link>На головну</a>
+            </p>
 
-            <p id="convert-loading" hidden>Конвертація...</p>
-            <p id="convert-result"></p>
-            <p id="convert-error" class="field-error" hidden></p>
+            <p v-if="categoryOperations.length">
+                Усього: <strong>{{ categorySum }} грн</strong>
+                (операцій: {{ categoryOperations.length }})
+            </p>
+
+            <ul v-if="categoryOperations.length">
+                <expense-row
+                    v-for="op in categoryOperations"
+                    :key="op.id"
+                    :transaction-id="op.id"
+                    :amount="op.amount"
+                    :type="op.type"
+                    :category="op.category"
+                    @delete="removeOperation(op.id)"
+                ></expense-row>
+            </ul>
+            <p v-else>Витрат у цій категорії немає.</p>
+        </section>
+
+
+
+        <!-- Невідома адреса: matchRoute() повернув null -->
+        <section v-if="route.page === 'not-found'">
+            <h2>Сторінку не знайдено</h2>
+            <p>Адреси <code>{{ route.params.path }}</code> у застосунку немає.</p>
+            <p><a href="#/" class="link-button" data-link>Повернутися на головну</a></p>
         </section>
 
     </main>

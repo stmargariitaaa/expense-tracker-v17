@@ -258,9 +258,11 @@ function watchChartVisibility(canvas) {
     chartObserver.observe(canvas);
 }
 
-// Крок 8: вимикає спостерігача й зупиняє анімацію (викликається при знищенні застосунку)
+// Крок 8: вимикає спостерігача й зупиняє анімацію (викликається при знищенні застосунку) + крок 5 доповнення
 function unwatchChart() {
     stopChartAnimation();
+    chartVisible = true;
+    chartInterrupted = false;
     if (chartObserver) {
         chartObserver.disconnect();
         chartObserver = null;

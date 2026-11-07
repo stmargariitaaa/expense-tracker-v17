@@ -434,6 +434,88 @@ footer
     outline-offset: 2px;
 }
 
+/* посилання на категорію в рядку операції успадковує колір рядка */
+.transaction a {
+    color: inherit;
+}
+
+/* пункт меню поточної сторінки */
+nav a[aria-current="page"] {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+nav a:focus-visible,
+.category-totals a:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+/* картка категорії — посилання на сторінку цієї категорії */
+.category-totals a {
+    display: block;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.category-totals a:hover {
+    border-color: var(--color-primary);
+}
+
+/* посилання, оформлене як кнопка (навігація на іншу сторінку).
+   Контраст #0f766e на білому ≈ 5.5:1 (≥ 4.5:1) */
+.link-button {
+    display: inline-block;
+    padding: 8px 16px;
+    border: 2px solid var(--color-primary);
+    border-radius: 4px;
+    background-color: var(--color-surface);
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.link-button:hover {
+    background-color: var(--color-primary);
+    color: var(--color);
+}
+
+.link-button:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+/* посилання «Деталі» в рядку операції */
+.expense-row__details {
+    margin-left: 12px;
+    font-size: 0.875rem;
+}
+
+/* сторінка деталей операції: пари «назва — значення» */
+.transaction-details {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 8px 20px;
+    margin: 0 0 20px;
+    padding: 15px;
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    background-color: var(--color-surface);
+}
+
+.transaction-details dt {
+    font-weight: 600;
+}
+
+.transaction-details dd {
+    margin: 0;
+}
+
 /*Планшет (від 600px): поля форми в ряд*/
 @media (min-width: 600px) 
 {
