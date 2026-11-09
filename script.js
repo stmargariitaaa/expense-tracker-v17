@@ -4,7 +4,10 @@
 // URL ендпоінта винесено в окрему константу 
 // зручно змінювати в одному місці, не шукаючи по всьому файлу
 //const API_URL = 'https://doesnotexist';
-const API_URL = 'https://jsonplaceholder.typicode.com/comments?postId=2';
+// було: const API_URL = 'https://jsonplaceholder.typicode.com/comments?postId=2';
+// Крок 9: локальний ендпоінт того самого сервера, що роздає сторінку
+const API_URL = '/api/transactions';
+//const API_URL = '/api/abc';
 // Видаляємо статичні li-приклади,
 // щоб продемонструвати динамічне видалення через DOM
 
@@ -232,17 +235,16 @@ async function loadData() {
         // отримуємо масив об'єктів-коментарів зі структурою { postId, id, name, email, body }
         const data = await response.json();
 
-        // адаптуємо поля відповіді API під форму об'єкта операції
-        // яку очікує renderOperations (amount, type) з практикуму 7
-        // Варіант визначає: name - призначення витрати, body - коментар
-        // власного числового поля "сума" API не повертає, тому як умовну суму
-        // використано id запису (унікальне ціле число) - прийнятно для мок-даних
-        const apiOperations = data.map(comment => ({
-            amount: comment.id,
-            type: 'витрата',
-            category: comment.name,
-            comment: comment.body
+        // локальний API вже повертає записи у формі операції
+        // { id, type, amount, category, date }, тому окреме перетворення не потрібне
+        const apiOperations = data.map(item => ({
+            id: item.id,
+            amount: item.amount,
+            type: item.type,
+            category: item.category,
+            date: item.date
         }));
+        console.log('Отримано з локального API:', apiOperations);
 
         // ручне перемальовування списку замінено компонентом
         //listContainer.innerHTML = '';
