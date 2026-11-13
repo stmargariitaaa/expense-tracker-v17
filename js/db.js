@@ -265,3 +265,50 @@ function getCategoryTotals(items) {
         .map(([category, total]) => ({ category, total: Math.round(total * 100) / 100 }))
         .sort((a, b) => b.total - a.total);
 }
+
+// ---------- Крок 9: дані з локального сервера ----------
+
+// id записів сервера, які вже перенесено в IndexedDB. Зберігаємо в localStorage:
+// тоді повторне завантаження не створює дублікатів, а операція, яку користувач
+// видалив, не повертається після оновлення сторінки
+const SERVER_IMPORTED_KEY = 'expense-tracker-server-imported';
+
+function loadImportedIds() {
+    try {
+        const raw = JSON.parse(localStorage.getItem(SERVER_IMPORTED_KEY));
+        return new Set(Array.isArray(raw) ? raw : []);
+    } catch (error) {
+        return new Set();
+    }
+}
+
+// переносить транзакції, отримані з /api/transactions, у IndexedDB —
+// сховище, з якого Vue-застосунок виводить список і рахує баланс.
+// Нові id створює autoIncrement; повертає кількість доданих записів
+async function importFromServer(serverItems) {
+    const imported = loadImportedIds();
+    let added = 0;
+
+    for (const item of serverItems) {
+        if (imported.has(item.id)) {
+            continue;   // цей запис уже переносили
+        }
+        if (!['дохід', 'витрата'].includes(item.type)) {
+            throw new Error(`Невідомий тип операції: ${item.type}`);
+        }
+
+        // amount, category і date перевіряє модель даних
+        const transaction = createTransaction({
+            amount: item.amount,
+            category: item.category,
+            date: item.date
+        });
+        await addItem({ type: item.type, ...transaction });
+
+        // запам'ятовуємо після кожного запису, щоб при збої не було повторів
+        imported.add(item.id);
+        localStorage.setItem(SERVER_IMPORTED_KEY, JSON.stringify([...imported]));
+        added++;
+    }
+    return added;
+}

@@ -231,12 +231,11 @@ async function loadData() {
             throw new Error(`Помилка завантаження даних: HTTP ${response.status}`);
         }
 
-        // розбираємо тіло відповіді як JSON
-        // отримуємо масив об'єктів-коментарів зі структурою { postId, id, name, email, body }
+                // розбираємо тіло відповіді як JSON: масив { id, type, amount, category, date }
         const data = await response.json();
 
-        // локальний API вже повертає записи у формі операції
-        // { id, type, amount, category, date }, тому окреме перетворення не потрібне
+        // локальний API вже повертає записи у формі операції,
+        // тому окреме перетворення полів не потрібне
         const apiOperations = data.map(item => ({
             id: item.id,
             amount: item.amount,
@@ -245,6 +244,14 @@ async function loadData() {
             date: item.date
         }));
         console.log('Отримано з локального API:', apiOperations);
+
+        // дані з сервера потрапляють в інтерфейс: нові записи переносимо в IndexedDB
+        // (джерело даних Vue-застосунку) й перечитуємо список —
+        // рядки та підсумковий баланс перемальовує Vue
+        await migrationDone;
+        const added = await importFromServer(apiOperations);
+        console.log(`Із сервера додано нових операцій: ${added}`);
+        await vm.refresh();
 
         // ручне перемальовування списку замінено компонентом
         //listContainer.innerHTML = '';

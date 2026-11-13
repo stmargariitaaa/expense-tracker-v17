@@ -46,7 +46,11 @@ app.get('/api/transactions', (req, res) => {
 
 // Крок 7: статичні файли клієнта віддаються з того самого сервера, що й API.
 // Підключаємо після API-маршрутів, щоб статика не перекривала ендпоінти
-app.use(express.static(CLIENT_DIR));
+// роздаємо лише файли клієнтської частини, а не весь корінь проєкту
+app.use('/css', express.static(path.join(CLIENT_DIR, 'css')));
+app.use('/js', express.static(path.join(CLIENT_DIR, 'js')));
+app.get('/script.js', (req, res) => res.sendFile(path.join(CLIENT_DIR, 'script.js')));
+app.get(['/', '/index.html'], (req, res) => res.sendFile(path.join(CLIENT_DIR, 'index.html')));
 
 // Невідомі адреси під /api повертають 404 у форматі JSON
 app.use('/api', (req, res) => {
