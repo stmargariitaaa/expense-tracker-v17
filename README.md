@@ -27,7 +27,7 @@
 
 ### Розгортання
 
-Застосунок розгорнуто на Render з HTTPS за замовчуванням: https://<назва>.onrender.com
+Застосунок розгорнуто на Render з HTTPS за замовчуванням: https://expense-tracker-0wnd.onrender.com/
 
 ### Можливі покращення
 
