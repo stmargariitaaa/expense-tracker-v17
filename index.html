@@ -103,7 +103,7 @@
                 <!-- Фільтрація списку операцій за типом -->
                 <div class="form-group">
                     <label for="filter-type">Показати:</label>
-                    <select id="filter-type">
+                    <select id="filter-type" v-model="filterType">
                         <option value="all">Усі</option>
                         <option value="дохід">Дохід</option>
                         <option value="витрата">Витрата</option>

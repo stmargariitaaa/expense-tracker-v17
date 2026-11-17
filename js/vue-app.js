@@ -22,7 +22,9 @@ const app = createApp({
             // текст помилки бази для користувача (порожній — помилки немає)
             dbError: '',
             // індекс сектора під курсором (−1 — курсор не на секторі)
-            hoveredIndex: -1
+            hoveredIndex: -1,
+            // вибраний тип у фільтрі списку: 'all', 'дохід' або 'витрата'
+            filterType: 'all'
             
         };
     },
@@ -49,9 +51,14 @@ const app = createApp({
             return getCategoryTotals(this.operations);
         },
 
-        // Крок 5, маршрут «/»: найновіші операції (більший id — пізніше додана)
+        // Крок 5, маршрут «/»: найновіші операції (більший id — пізніше додана),
+        // відфільтровані за типом, вибраним у select
         recentOperations() {
-            return [...this.operations]
+            const filtered = this.filterType === 'all'
+            ? this.operations
+            : this.operations.filter(op => op.type === this.filterType);
+
+            return [...filtered]
                 .sort((a, b) => b.id - a.id)
                 .slice(0, RECENT_LIMIT);
         },
