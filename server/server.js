@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Крок 7: тека з клієнтською частиною (index.html, CSS, JS з попередніх практикумів).
 // '..' означає теку expense-tracker, що лежить на рівень вище за server/

@@ -251,6 +251,8 @@ app.component('ExpenseRow', {
             <button type="button" class="expense-row__delete" @click="$emit('delete')">Видалити</button>
         </li>
     `
+
+    
 });
 
 // монтуємо застосунок у контейнер #app; mount повертає екземпляр кореневого компонента
